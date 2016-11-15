@@ -25,6 +25,15 @@ std::vector<T> generate_geometric_samples(std::size_t sample_number,
                                           T common_ratio) {
   static_assert(std::is_arithmetic<T>::value, "not arithmetic type");
   std::vector<T> v(sample_number);
+  int count = 1;
+  for (auto & i : v) i = pow (common_ratio, count++);
+  for (const auto i : v) std::cout << i << std::endl;
+  /*T n{1};
+  std::generate (std::begin(v), std::end(v), [&n, common_ratio]() {
+    n = n * common_ratio;
+    return n;
+  });
+  */
   return v;
 }
 
@@ -36,7 +45,13 @@ std::vector<T> generate_geometric_samples(std::size_t sample_number,
 /// @return true if all elements are divisible.
 ///
 bool is_divisible_by(std::vector<unsigned long> &v, unsigned long d) {
-  bool result = false;
+  bool result = true;
+  for (const auto i : v) {
+    if (i % d != 0) {
+      result = false;
+      break;
+    }
+  } 
   return result;
 }
 
@@ -60,6 +75,7 @@ void remove_even_numbers(std::vector<T> &v)
 
   auto erase_criteria = [](auto &i) {
     bool erased = false;  ///< flag indicating if is would be erased or not
+    if (i % 2 == 0) erased = true;
     return erased;
   };
 
@@ -114,8 +130,15 @@ T count_unique_words(const std::string &input) {
   std::string word;
   std::istringstream iss(input);
   while (iss >> word) {
+    /*auto i = count_map.find (word);
+    if (i == count_map.end()) {
+      count_map.insert (std::make_pair (word, 1));
+    }
+    else {
+      i->second = i->second + 1;
+    }*/
+    count_map [word] ++;
   }
-
   return count_map;
 }
 
@@ -151,7 +174,8 @@ auto time_find(const T &data, const std::string &key)
   const auto end = std::chrono::steady_clock::now();
   assert(iter != data.cend());
   assert(start != end);
-  return std::chrono::nanoseconds::zero;
+  //return std::chrono::nanoseconds::zero;
+  return end-start;
 }
 
 TEST_CASE("Time word counting", "[timing]")
